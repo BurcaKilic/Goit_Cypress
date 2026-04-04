@@ -1,0 +1,12 @@
+config:
+  target: "http://httpbin.org/"  #anaURL-> Test buna yapılıyor.
+  phases:
+    - duration: 1
+      arrivalRate: 2
+      name: Goit Performance Test #opsiyonel
+
+scenarios:
+  - name: Get a resource
+    flow:
+      - get:
+          url: "{{target}}get"

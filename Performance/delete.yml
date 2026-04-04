@@ -1,0 +1,12 @@
+config:
+  target: "http://httpbin.org/"  
+  phases:
+    - duration: 1
+      arrivalRate: 2
+      name: Goit Performance Test
+
+scenarios:
+  - name: Delete an Account
+    flow:
+      - delete:
+          url: "{{target}}delete"

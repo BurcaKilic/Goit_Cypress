@@ -1,0 +1,43 @@
+config:
+  target: "http://httpbin.org/"
+  phases:
+    - duration: 3
+      arrivalRate: 2
+      name: Goit Performance Test
+  payload:
+    path: "abc.csv"
+    fields:
+      - "keyword1"
+      - "keyword2"
+    order: sequence
+  plugins:
+    ensure:
+      thresholds:
+        - http.response_time.max: 1000
+        - http.response_time.2xx.p99: 600
+      conditions:
+        - expression: vusers.failed == 0
+        - expression: http.response_time.max < 1000
+        - expression: http.response_time.2xx.p95 < 500
+
+scenarios:
+  - name: Get and Post Test
+    flow:
+      - get:
+          url: "{{target}}get?param1={{ keyword1 }}&param2={{ keyword2 }}"
+      - post:
+          url: "{{target}}post"
+          headers:
+            Content-Type: "application/json"
+          json:
+            username: "{{ keyword1 }}"
+            password: "{{ keyword2 }}"
+          capture:
+            - json: "$.json"
+              as: "response_body"
+            - json: "$.headers.Host"
+              as: "Host"
+      - log: "Response Body : {{response_body}}"
+      - log: "Host : {{Host}}"
+      - log: "ilk değer: {{ keyword1 }}"
+      - log: "ikinci değer: {{ keyword2 }}"

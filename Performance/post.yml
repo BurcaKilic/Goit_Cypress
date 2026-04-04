@@ -1,0 +1,35 @@
+config:
+  target: "http://httpbin.org/"  
+  phases:
+    - duration: 1
+      arrivalRate: 2
+      name: Goit Performance Test 
+  plugins: #özellikle test edilmesi istenilen verilen aşağıya yazılır.
+    ensure:
+      thresholds:
+        - http.response_time.max: 1000
+        - http.response_time.2xx.p99: 600
+      conditions: 
+        - expression: http.responses == 2
+        - expression: vusers.failed == 0
+        - expression: http.response_time.max <1000 and http.response_time.2xx.p95 <500
+
+
+scenarios:
+  - name: Create Account
+    flow:
+      - post:
+          url: "{{target}}post"
+          json:  #body göndermek isteniyorsa bu eklenir. Örn: kullanıcı adı ve şifre
+            username: "Goit"
+            password: "12345"
+          headers:  #headersta özellikle istenen bir şey varsa o eklenir mesela token
+            Content-Type: "application/json"
+          capture:  #dönen bodyleri response body olark niteliyormuş. Çoklu headers kullanımılarında kulanılıyormuş
+            - json: "$.json" #sadece $ işareti komple response u verir. $.json ise json un responseunun verir
+              as: "response_body"  #isimlendirme satırı
+            - json: "$.headers.Host"
+              as: "Host"  #isimlendirme satırı
+      - log: "Response Body : {{response_body}}" #loglama kısmı
+      - log: "Host : {{Host}}"
+            
